@@ -9,7 +9,13 @@ calories/macros automatically.
 - **Runtime:** Node.js
 - **Server:** Express
 - **Frontend:** Vanilla HTML, CSS, and JavaScript (no frameworks)
-- **AI (later phase):** Google Gemini API for food image analysis
+- **AI:** Pluggable food image analysis via `llm.js`. Set `LLM_PROVIDER` in `.env` to
+  `gemini` | `openai` | `anthropic` | `kimi`; each provider reads its own key + model
+  from `.env` (e.g. `GEMINI_API_KEY`/`GEMINI_MODEL`, `OPENAI_*`, `ANTHROPIC_*`, `KIMI_*`).
+  Config is re-read from `.env` per request, so changing provider/key/model needs no
+  restart. SDKs: `@google/generative-ai`, `openai` (also used for Kimi/Moonshot via a
+  custom `baseURL`), `@anthropic-ai/sdk`. The `POST /api/analyze-food` endpoint accepts a
+  base64 image and returns the same structured nutrition JSON regardless of provider.
 
 ## Folder Structure
 The project starts minimal and grows into roughly this shape:

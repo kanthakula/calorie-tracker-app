@@ -192,6 +192,119 @@
     button.add:hover { filter: brightness(1.05); }
     button.add:active { transform: scale(0.99); }
 
+    /* ---------- Snap Your Food (AI) ---------- */
+    .snap-sub { color: var(--muted); font-size: 0.9rem; margin: -8px 0 14px; }
+    .snap-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .snap-btn {
+      flex: 1 1 140px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--orange), var(--orange-deep));
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+    .snap-btn:hover { filter: brightness(1.05); }
+    .snap-btn.outline {
+      background: #fff;
+      color: var(--orange-deep);
+      border: 1px solid var(--orange);
+    }
+    .webcam-wrap { margin-top: 14px; }
+    .webcam-wrap video {
+      width: 100%;
+      max-height: 320px;
+      object-fit: cover;
+      border-radius: 12px;
+      background: #000;
+      margin-bottom: 10px;
+    }
+
+    #snap-status { margin-top: 16px; }
+    .snap-loading {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .snap-loading img, .result-thumb {
+      width: 64px;
+      height: 64px;
+      object-fit: cover;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--line);
+      border-top-color: var(--green);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .result {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(245,150,59,0.06), rgba(47,168,116,0.06));
+    }
+    .result-head { display: flex; gap: 14px; align-items: flex-start; }
+    .result-title { flex: 1; min-width: 0; }
+    .result-name { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.01em; }
+    .result-cal { font-weight: 700; color: var(--ink); margin-top: 2px; }
+    .result-cal span { color: var(--muted); font-weight: 600; font-size: 0.85rem; }
+    .stars { font-size: 1rem; letter-spacing: 1px; margin-top: 6px; }
+    .stars .on { color: var(--orange); }
+    .stars .off { color: var(--line); }
+    .stars small { color: var(--muted); font-weight: 600; margin-left: 6px; font-size: 0.78rem; }
+    .conf-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: capitalize;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-top: 8px;
+    }
+    .conf-high { background: rgba(47,168,116,0.15); color: var(--green-deep); }
+    .conf-medium { background: rgba(245,150,59,0.18); color: var(--orange-deep); }
+    .conf-low { background: rgba(229,86,75,0.14); color: var(--danger); }
+    .result-detail { font-size: 0.9rem; color: var(--ink); margin-top: 12px; }
+    .result-detail .lbl { color: var(--muted); font-weight: 700; font-size: 0.78rem; }
+    .result-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .result-actions .add { flex: 1 1 160px; }
+    .result-actions .ghost {
+      flex: 0 0 auto;
+      width: auto;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .snap-error {
+      background: rgba(229,86,75,0.1);
+      color: var(--danger);
+      border: 1px solid rgba(229,86,75,0.25);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
     /* ---------- Meals list ---------- */
     .meal {
       display: flex;
@@ -345,6 +458,31 @@
         <span id="progress-pct">0%</span>
         <span id="progress-remaining"></span>
       </div>
+    </section>
+
+    <!-- Snap Your Food (AI) -->
+    <section class="card">
+      <h2>📸 Snap Your Food</h2>
+      <p class="snap-sub">Estimate calories from a photo using AI.</p>
+      <div class="snap-actions">
+        <label class="snap-btn">
+          ⬆ Upload from file
+          <input type="file" id="food-file" accept="image/*" hidden />
+        </label>
+        <button type="button" class="snap-btn outline" id="webcam-btn">📷 Take a photo</button>
+        <!-- Native camera fallback (works on mobile over http, unlike getUserMedia) -->
+        <input type="file" id="food-camera" accept="image/*" capture="environment" hidden />
+      </div>
+
+      <div class="webcam-wrap" id="webcam-wrap" hidden>
+        <video id="webcam-video" autoplay playsinline muted></video>
+        <div class="snap-actions">
+          <button type="button" class="snap-btn" id="capture-btn">Capture photo</button>
+          <button type="button" class="snap-btn outline" id="webcam-cancel">Cancel</button>
+        </div>
+      </div>
+
+      <div id="snap-status"></div>
     </section>
 
     <!-- Add Meal -->
@@ -697,6 +835,214 @@
 
     els.todayBtn.disabled = isSelectedToday();
     render();
+
+    /* ================= Snap Your Food (AI) ================= */
+    const snap = {
+      file: document.getElementById('food-file'),
+      camera: document.getElementById('food-camera'),
+      webcamBtn: document.getElementById('webcam-btn'),
+      webcamWrap: document.getElementById('webcam-wrap'),
+      video: document.getElementById('webcam-video'),
+      captureBtn: document.getElementById('capture-btn'),
+      cancelBtn: document.getElementById('webcam-cancel'),
+      status: document.getElementById('snap-status'),
+    };
+    let webcamStream = null;
+
+    function guessMealType() {
+      const h = new Date().getHours();
+      if (h < 11) return 'breakfast';
+      if (h < 16) return 'lunch';
+      if (h < 21) return 'dinner';
+      return 'snack';
+    }
+
+    function loadImage(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('Could not read that image.'));
+        img.src = src;
+      });
+    }
+
+    // Downscale to keep the payload small and safely under the 4MB server limit.
+    async function downscale(source, maxEdge = 1280, quality = 0.85) {
+      const img = source instanceof HTMLImageElement ? source : await loadImage(source);
+      const scale = Math.min(1, maxEdge / Math.max(img.width || maxEdge, img.height || maxEdge));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round((img.videoWidth || img.width) * scale));
+      canvas.height = Math.max(1, Math.round((img.videoHeight || img.height) * scale));
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', quality);
+      return { dataUrl, base64: dataUrl.split(',')[1], mimeType: 'image/jpeg' };
+    }
+
+    function readAsDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Could not read that file.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function fileToImage(file) {
+      const dataUrl = await readAsDataUrl(file);
+      try {
+        // Preferred path: decode + downscale to a small JPEG.
+        return await downscale(dataUrl);
+      } catch {
+        // Fallback for formats the browser can't render (e.g. HEIC from iPhones).
+        // Gemini can still analyze the original bytes, so send them as-is.
+        if (file.size > 4 * 1024 * 1024) {
+          throw new Error('That image is over 4MB and could not be resized. Please pick a smaller one.');
+        }
+        const mimeType = /^image\//.test(file.type || '') ? file.type : 'image/jpeg';
+        return { dataUrl, base64: dataUrl.split(',')[1], mimeType };
+      }
+    }
+
+    function stars(rating) {
+      let html = '';
+      for (let i = 1; i <= 5; i++) {
+        html += `<span class="${i <= rating ? 'on' : 'off'}">★</span>`;
+      }
+      return `<span class="stars">${html}<small>${rating}/5 health</small></span>`;
+    }
+
+    function showLoading(previewUrl) {
+      snap.status.innerHTML = `
+        <div class="snap-loading">
+          <img src="${previewUrl}" alt="food preview" />
+          <div class="spinner"></div>
+          <span>Analyzing your food…</span>
+        </div>`;
+    }
+
+    function showError(message) {
+      const div = document.createElement('div');
+      div.className = 'snap-error';
+      div.textContent = message || 'Something went wrong. Please try again.';
+      snap.status.innerHTML = '';
+      snap.status.appendChild(div);
+    }
+
+    function showResult(data, previewUrl) {
+      const conf = ['low', 'medium', 'high'].includes(data.confidence) ? data.confidence : 'low';
+      snap.status.innerHTML = `
+        <div class="result">
+          <div class="result-head">
+            <img class="result-thumb" src="${previewUrl}" alt="food preview" />
+            <div class="result-title">
+              <div class="result-name"></div>
+              <div class="result-cal">${data.estimated_calories.toLocaleString()} <span>est. calories</span></div>
+              ${stars(data.healthiness_rating)}
+              <div><span class="conf-badge conf-${conf}">${conf} confidence</span></div>
+            </div>
+          </div>
+          ${data.portion_recommendation
+            ? `<div class="result-detail"><span class="lbl">PORTION</span><br>${escapeHtml(data.portion_recommendation)}</div>` : ''}
+          ${data.notes
+            ? `<div class="result-detail"><span class="lbl">NOTES</span><br>${escapeHtml(data.notes)}</div>` : ''}
+          <div class="result-actions">
+            <button type="button" class="add" id="snap-add">+ Add to log</button>
+            <button type="button" class="ghost" id="snap-dismiss">Dismiss</button>
+          </div>
+        </div>`;
+      snap.status.querySelector('.result-name').textContent = data.food_name;
+      document.getElementById('snap-add').addEventListener('click', () => {
+        document.getElementById('meal-name').value = data.food_name;
+        document.getElementById('meal-cal').value = data.estimated_calories;
+        document.getElementById('meal-type').value = guessMealType();
+        document.getElementById('meal-form').requestSubmit();
+        snap.status.innerHTML = '';
+      });
+      document.getElementById('snap-dismiss').addEventListener('click', () => {
+        snap.status.innerHTML = '';
+      });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = String(str);
+      return div.innerHTML;
+    }
+
+    async function analyze(prepared) {
+      showLoading(prepared.dataUrl);
+      try {
+        const resp = await fetch('/api/analyze-food', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageBase64: prepared.base64, mimeType: prepared.mimeType }),
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) throw new Error(data.error || 'Analysis failed. Please try again.');
+        showResult(data, prepared.dataUrl);
+      } catch (err) {
+        showError(err.message);
+      }
+    }
+
+    // ---- File upload / native camera ----
+    async function handleFileInput(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try {
+        const prepared = await fileToImage(file);
+        await analyze(prepared);
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        e.target.value = ''; // allow re-selecting the same file
+      }
+    }
+    snap.file.addEventListener('change', handleFileInput);
+    snap.camera.addEventListener('change', handleFileInput);
+
+    // ---- Webcam ----
+    function stopWebcam() {
+      if (webcamStream) {
+        webcamStream.getTracks().forEach((t) => t.stop());
+        webcamStream = null;
+      }
+      snap.video.srcObject = null;
+      snap.webcamWrap.hidden = true;
+    }
+
+    snap.webcamBtn.addEventListener('click', async () => {
+      // Live webcam (getUserMedia) only works in a secure context (https/localhost).
+      // On mobile over http it's unavailable, so fall back to the native camera input.
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        snap.camera.click();
+        return;
+      }
+      try {
+        webcamStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+        });
+        snap.video.srcObject = webcamStream;
+        snap.webcamWrap.hidden = false;
+      } catch {
+        // Permission denied or no device — fall back to the native camera picker.
+        snap.camera.click();
+      }
+    });
+
+    snap.captureBtn.addEventListener('click', async () => {
+      if (!webcamStream) return;
+      try {
+        const prepared = await downscale(snap.video);
+        stopWebcam();
+        await analyze(prepared);
+      } catch (err) {
+        stopWebcam();
+        showError(err.message);
+      }
+    });
+
+    snap.cancelBtn.addEventListener('click', stopWebcam);
   </script>
 </body>
 </html>

@@ -9,6 +9,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "express": "^4.19.2"
+    "@anthropic-ai/sdk": "^0.71.2",
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2",
+    "openai": "^4.104.0",
+    "selfsigned": "^2.4.1"
   }
 }

@@ -29,6 +29,9 @@ coverage/
 dist/
 build/
 
+# Self-signed dev TLS certs (generated at runtime)
+certs/
+
 # Editor / OS
 .DS_Store
 Thumbs.db
