@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>K21 Calorie Tracker</title>
+  <style>
+    :root {
+      --green: #2fa874;
+      --green-deep: #1f8a5e;
+      --orange: #f5963b;
+      --orange-deep: #e07a1f;
+      --bg: #f3f7f4;
+      --card: #ffffff;
+      --ink: #1f2a26;
+      --muted: #6d7d76;
+      --line: #e4ece7;
+      --danger: #e5564b;
+      --shadow: 0 6px 24px rgba(31, 138, 94, 0.08);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 24px 18px 64px;
+    }
+
+    /* ---------- Header ---------- */
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 22px;
+    }
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--green-deep), var(--orange-deep));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    header .date { color: var(--muted); font-size: 0.95rem; font-weight: 500; }
+
+    /* ---------- Date selector bar ---------- */
+    .date-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .date-bar label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
+    .date-bar input[type="date"] {
+      width: auto;
+      flex: 0 1 auto;
+      padding: 9px 12px;
+    }
+    .date-bar .today-btn {
+      border: 1px solid var(--green);
+      background: #fff;
+      color: var(--green-deep);
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 9px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .date-bar .today-btn:hover { background: rgba(47,168,116,0.08); }
+    .date-bar .today-btn:disabled { opacity: 0.45; cursor: default; }
+
+    /* ---------- Cards ---------- */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    .card h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--ink);
+    }
+
+    /* ---------- Daily Summary ---------- */
+    .summary {
+      background: linear-gradient(135deg, rgba(47,168,116,0.10), rgba(245,150,59,0.08));
+    }
+    .summary-top {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .calorie-num {
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .calorie-num span { font-size: 1rem; font-weight: 600; color: var(--muted); }
+    .goal-edit {
+      text-align: right;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .goal-edit label { display: block; margin-bottom: 4px; }
+    .goal-edit input {
+      width: 90px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      text-align: right;
+      color: var(--ink);
+    }
+    .progress {
+      height: 14px;
+      background: var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--green), var(--orange));
+      transition: width 0.4s ease;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .progress-meta .over { color: var(--danger); font-weight: 600; }
+
+    /* ---------- Form ---------- */
+    form .row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    label.field { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: var(--ink);
+      background: #fff;
+      font-family: inherit;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(47,168,116,0.15);
+    }
+    button.add {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--green), var(--green-deep));
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.08s ease, filter 0.15s ease;
+    }
+    button.add:hover { filter: brightness(1.05); }
+    button.add:active { transform: scale(0.99); }
+
+    /* ---------- Meals list ---------- */
+    .meal {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .meal:last-child { border-bottom: none; }
+    .meal-info { flex: 1; min-width: 0; }
+    .meal-name { font-weight: 600; }
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: capitalize;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(47,168,116,0.12);
+      color: var(--green-deep);
+      margin-top: 2px;
+    }
+    .badge.lunch { background: rgba(245,150,59,0.15); color: var(--orange-deep); }
+    .badge.dinner { background: rgba(91,124,250,0.12); color: #4257c9; }
+    .badge.snack { background: rgba(150,90,210,0.12); color: #7b48b0; }
+    .meal-cal { font-weight: 700; white-space: nowrap; }
+    .meal-cal span { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+    button.del {
+      border: none;
+      background: transparent;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px 8px;
+      border-radius: 8px;
+      line-height: 1;
+    }
+    button.del:hover { background: rgba(229,86,75,0.1); }
+    .empty { color: var(--muted); font-size: 0.92rem; padding: 8px 0; text-align: center; }
+
+    /* ---------- History chart ---------- */
+    .history-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .history-head h2 { margin-bottom: 0; }
+    .range-tabs {
+      display: inline-flex;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .range-tabs button {
+      width: auto;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .range-tabs button.active {
+      background: #fff;
+      color: var(--green-deep);
+      box-shadow: 0 1px 3px rgba(31,42,38,0.12);
+    }
+    .chart-scroll { overflow-x: auto; padding-bottom: 4px; }
+    .chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 8px;
+      height: 160px;
+      padding-top: 8px;
+      min-width: 100%;
+    }
+    .bar-col {
+      flex: 1 0 auto;
+      min-width: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .history-stats {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+    .history-stats .stat .num { font-size: 1.2rem; font-weight: 800; letter-spacing: -0.02em; }
+    .history-stats .stat .lbl { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+    .bar-val { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+    .bar {
+      width: 100%;
+      max-width: 38px;
+      border-radius: 8px 8px 4px 4px;
+      background: linear-gradient(180deg, var(--green), var(--green-deep));
+      min-height: 3px;
+      transition: height 0.4s ease;
+    }
+    .bar.today { background: linear-gradient(180deg, var(--orange), var(--orange-deep)); }
+    .bar-label { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+
+    @media (max-width: 520px) {
+      form .row { grid-template-columns: 1fr; }
+      .calorie-num { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>K21 Calorie Tracker</h1>
+      <div class="date" id="today-date"></div>
+    </header>
+
+    <!-- Date selector -->
+    <div class="date-bar">
+      <label for="active-date">Logging for</label>
+      <input type="date" id="active-date" />
+      <button type="button" class="today-btn" id="today-btn">Today</button>
+    </div>
+
+    <!-- Daily Summary -->
+    <section class="card summary">
+      <div class="summary-top">
+        <div>
+          <div class="calorie-num"><span id="consumed">0</span></div>
+          <div id="summary-label" style="color:var(--muted);font-size:0.9rem;font-weight:600;">calories today</div>
+        </div>
+        <div class="goal-edit">
+          <label for="goal-input">Daily goal</label>
+          <input type="number" id="goal-input" min="0" step="50" />
+        </div>
+      </div>
+      <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+      <div class="progress-meta">
+        <span id="progress-pct">0%</span>
+        <span id="progress-remaining"></span>
+      </div>
+    </section>
+
+    <!-- Add Meal -->
+    <section class="card">
+      <h2>Add a meal</h2>
+      <form id="meal-form">
+        <div class="row">
+          <div>
+            <label class="field" for="meal-name">Meal</label>
+            <input type="text" id="meal-name" placeholder="e.g. Grilled chicken salad" required />
+          </div>
+          <div>
+            <label class="field" for="meal-cal">Calories</label>
+            <input type="number" id="meal-cal" placeholder="450" min="0" step="1" required />
+          </div>
+          <div>
+            <label class="field" for="meal-type">Type</label>
+            <select id="meal-type">
+              <option value="breakfast">Breakfast</option>
+              <option value="lunch">Lunch</option>
+              <option value="dinner">Dinner</option>
+              <option value="snack">Snack</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="add">+ Add meal</button>
+      </form>
+    </section>
+
+    <!-- Today's Meals -->
+    <section class="card">
+      <h2 id="meals-heading">Today's meals</h2>
+      <div id="meal-list"></div>
+    </section>
+
+    <!-- History -->
+    <section class="card">
+      <div class="history-head">
+        <h2 id="history-title">Last 7 days</h2>
+        <div class="range-tabs" id="range-tabs">
+          <button type="button" data-range="7" class="active">7d</button>
+          <button type="button" data-range="14">14d</button>
+          <button type="button" data-range="30">30d</button>
+          <button type="button" data-range="all">All</button>
+        </div>
+      </div>
+      <div class="chart-scroll"><div class="chart" id="chart"></div></div>
+      <div class="history-stats" id="history-stats"></div>
+    </section>
+  </div>
+
+  <script type="module">
+    /*
+     * K21 Calorie Tracker — Phase 1 (textual, localStorage-backed).
+     *
+     * State is kept in two localStorage keys. Meal records carry an ISO date
+     * (YYYY-MM-DD) so daily and weekly views are pure derivations of one list.
+     * Phase 2 (Gemini image analysis) only needs to produce a meal object via
+     * createMeal() and call addMeal() — no other code should need to change.
+     */
+
+    const STORAGE_KEYS = { meals: 'k21.meals', goal: 'k21.goal' };
+    const DEFAULT_GOAL = 2000;
+    const MEAL_TYPES = ['breakfast', 'lunch', 'dinner', 'snack'];
+
+    // ---------- Storage helpers ----------
+    function loadMeals() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.meals);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveMeals(meals) {
+      localStorage.setItem(STORAGE_KEYS.meals, JSON.stringify(meals));
+    }
+
+    function loadGoal() {
+      const raw = localStorage.getItem(STORAGE_KEYS.goal);
+      const n = Number(raw);
+      return Number.isFinite(n) && n > 0 ? n : DEFAULT_GOAL;
+    }
+
+    function saveGoal(goal) {
+      localStorage.setItem(STORAGE_KEYS.goal, String(goal));
+    }
+
+    // ---------- Date helpers ----------
+    function isoDate(date = new Date()) {
+      // Local YYYY-MM-DD (avoids UTC off-by-one from toISOString()).
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function parseIso(iso) {
+      // Build a local Date from a YYYY-MM-DD string (no UTC shift).
+      const [y, m, d] = iso.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function formatLong(date) {
+      // "1 June 2026" style.
+      return date.toLocaleDateString('en-GB', {
+        day: 'numeric', month: 'long', year: 'numeric',
+      });
+    }
+
+    // ---------- Meal model ----------
+    function createMeal({ name, calories, type, date }) {
+      return {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        name: String(name).trim(),
+        calories: Math.max(0, Math.round(Number(calories) || 0)),
+        type: MEAL_TYPES.includes(type) ? type : 'snack',
+        date: date || isoDate(),
+      };
+    }
+
+    // ---------- App state ----------
+    let meals = loadMeals();
+    let goal = loadGoal();
+    let selectedDate = isoDate(); // the date the UI is currently logging/viewing
+    let historyRange = 7;         // chart window: 7 | 14 | 30 | 'all'
+
+    function addMeal(meal) {
+      meals.push(meal);
+      saveMeals(meals);
+      render();
+    }
+
+    function deleteMeal(id) {
+      meals = meals.filter((m) => m.id !== id);
+      saveMeals(meals);
+      render();
+    }
+
+    function setGoal(value) {
+      const n = Math.max(0, Math.round(Number(value) || 0));
+      goal = n > 0 ? n : DEFAULT_GOAL;
+      saveGoal(goal);
+      render();
+    }
+
+    // ---------- Derivations ----------
+    function mealsForDate(iso) {
+      return meals.filter((m) => m.date === iso);
+    }
+
+    function totalFor(iso) {
+      return mealsForDate(iso).reduce((sum, m) => sum + m.calories, 0);
+    }
+
+    function daysBetween(startIso, endIso) {
+      // Inclusive list of day objects from startIso through endIso.
+      const days = [];
+      const cur = parseIso(startIso);
+      const end = parseIso(endIso);
+      while (cur <= end) {
+        const iso = isoDate(cur);
+        days.push({ date: new Date(cur), iso, total: totalFor(iso) });
+        cur.setDate(cur.getDate() + 1);
+      }
+      return days;
+    }
+
+    function earliestMealIso() {
+      return meals.reduce((min, m) => (min && min <= m.date ? min : m.date), null);
+    }
+
+    function historyDays() {
+      const todayIso = isoDate();
+      if (historyRange === 'all') {
+        const earliest = earliestMealIso();
+        const startIso = earliest && earliest < todayIso ? earliest : todayIso;
+        return daysBetween(startIso, todayIso);
+      }
+      const start = new Date();
+      start.setDate(start.getDate() - (historyRange - 1));
+      return daysBetween(isoDate(start), todayIso);
+    }
+
+    // ---------- Rendering ----------
+    const els = {
+      date: document.getElementById('today-date'),
+      consumed: document.getElementById('consumed'),
+      goalInput: document.getElementById('goal-input'),
+      bar: document.getElementById('progress-bar'),
+      pct: document.getElementById('progress-pct'),
+      remaining: document.getElementById('progress-remaining'),
+      list: document.getElementById('meal-list'),
+      chart: document.getElementById('chart'),
+      activeDate: document.getElementById('active-date'),
+      todayBtn: document.getElementById('today-btn'),
+      summaryLabel: document.getElementById('summary-label'),
+      mealsHeading: document.getElementById('meals-heading'),
+      historyTitle: document.getElementById('history-title'),
+      historyStats: document.getElementById('history-stats'),
+      rangeTabs: document.getElementById('range-tabs'),
+    };
+
+    function isSelectedToday() {
+      return selectedDate === isoDate();
+    }
+
+    function renderSummary() {
+      const consumed = totalFor(selectedDate);
+      els.consumed.textContent = consumed.toLocaleString();
+      els.summaryLabel.textContent = isSelectedToday()
+        ? 'calories today'
+        : `calories on ${formatLong(parseIso(selectedDate))}`;
+      if (document.activeElement !== els.goalInput) els.goalInput.value = goal;
+
+      const pct = goal > 0 ? Math.round((consumed / goal) * 100) : 0;
+      els.bar.style.width = `${Math.min(pct, 100)}%`;
+      els.pct.textContent = `${pct}% of goal`;
+
+      const remaining = goal - consumed;
+      if (remaining >= 0) {
+        els.remaining.textContent = `${remaining.toLocaleString()} cal left`;
+        els.remaining.classList.remove('over');
+      } else {
+        els.remaining.textContent = `${Math.abs(remaining).toLocaleString()} cal over`;
+        els.remaining.classList.add('over');
+      }
+    }
+
+    function renderMeals() {
+      const dayMeals = mealsForDate(selectedDate);
+      els.mealsHeading.textContent = isSelectedToday()
+        ? "Today's meals"
+        : `Meals on ${formatLong(parseIso(selectedDate))}`;
+      els.list.innerHTML = '';
+      if (dayMeals.length === 0) {
+        els.list.innerHTML = isSelectedToday()
+          ? '<div class="empty">No meals logged yet today.</div>'
+          : '<div class="empty">No meals logged for this date.</div>';
+        return;
+      }
+      for (const meal of dayMeals) {
+        const row = document.createElement('div');
+        row.className = 'meal';
+        row.innerHTML = `
+          <div class="meal-info">
+            <div class="meal-name"></div>
+            <span class="badge ${meal.type}">${meal.type}</span>
+          </div>
+          <div class="meal-cal">${meal.calories.toLocaleString()} <span>cal</span></div>
+          <button class="del" title="Delete" aria-label="Delete meal">&times;</button>
+        `;
+        row.querySelector('.meal-name').textContent = meal.name || 'Untitled';
+        row.querySelector('.del').addEventListener('click', () => deleteMeal(meal.id));
+        els.list.appendChild(row);
+      }
+    }
+
+    function renderChart() {
+      const days = historyDays();
+      const max = Math.max(goal, ...days.map((d) => d.total), 1);
+      const showValues = days.length <= 14; // value labels get cramped beyond this
+      els.chart.innerHTML = '';
+      for (const day of days) {
+        const heightPct = Math.round((day.total / max) * 100);
+        const col = document.createElement('div');
+        col.className = 'bar-col';
+        const isSelected = day.iso === selectedDate;
+        const label = days.length <= 7
+          ? day.date.toLocaleDateString('en-GB', { weekday: 'short' })
+          : String(day.date.getDate());
+        col.innerHTML = `
+          <div class="bar-val">${showValues && day.total ? day.total.toLocaleString() : ''}</div>
+          <div class="bar ${isSelected ? 'today' : ''}" style="height:${heightPct}%"
+               title="${formatLong(day.date)}: ${day.total.toLocaleString()} cal"></div>
+          <div class="bar-label">${label}</div>
+        `;
+        els.chart.appendChild(col);
+      }
+      els.historyTitle.textContent = historyRange === 'all'
+        ? `All history (${days.length} ${days.length === 1 ? 'day' : 'days'})`
+        : `Last ${historyRange} days`;
+      renderHistoryStats(days);
+    }
+
+    function renderHistoryStats(days) {
+      const total = days.reduce((sum, d) => sum + d.total, 0);
+      const loggedDays = days.filter((d) => d.total > 0).length;
+      const avg = days.length ? Math.round(total / days.length) : 0;
+      els.historyStats.innerHTML = `
+        <div class="stat"><div class="num">${total.toLocaleString()}</div><div class="lbl">total calories</div></div>
+        <div class="stat"><div class="num">${avg.toLocaleString()}</div><div class="lbl">avg / day</div></div>
+        <div class="stat"><div class="num">${loggedDays}</div><div class="lbl">days logged</div></div>
+      `;
+    }
+
+    function render() {
+      renderSummary();
+      renderMeals();
+      renderChart();
+    }
+
+    // ---------- Wiring ----------
+    els.date.textContent = formatLong(new Date());
+    els.goalInput.value = goal;
+    els.activeDate.value = selectedDate;
+    els.activeDate.max = isoDate(); // no logging into the future
+
+    function setSelectedDate(iso) {
+      if (!iso) return;
+      selectedDate = iso > isoDate() ? isoDate() : iso;
+      els.activeDate.value = selectedDate;
+      els.todayBtn.disabled = isSelectedToday();
+      render();
+    }
+
+    document.getElementById('meal-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('meal-name');
+      const cal = document.getElementById('meal-cal');
+      const type = document.getElementById('meal-type');
+      const meal = createMeal({
+        name: name.value,
+        calories: cal.value,
+        type: type.value,
+        date: selectedDate,
+      });
+      if (!meal.name) return;
+      addMeal(meal);
+      name.value = '';
+      cal.value = '';
+      name.focus();
+    });
+
+    els.goalInput.addEventListener('change', (e) => setGoal(e.target.value));
+    els.activeDate.addEventListener('change', (e) => setSelectedDate(e.target.value));
+    els.todayBtn.addEventListener('click', () => setSelectedDate(isoDate()));
+
+    els.rangeTabs.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-range]');
+      if (!btn) return;
+      const raw = btn.dataset.range;
+      historyRange = raw === 'all' ? 'all' : Number(raw);
+      els.rangeTabs.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderChart();
+    });
+
+    els.todayBtn.disabled = isSelectedToday();
+    render();
+  </script>
+</body>
+</html>
