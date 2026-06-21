@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>K21 Admin — AI Settings</title>
+  <style>
+    :root {
+      --green: #2fa874; --green-deep: #1f8a5e; --orange: #f5963b; --orange-deep: #e07a1f;
+      --bg: #f3f7f4; --card: #fff; --ink: #1f2a26; --muted: #6d7d76; --line: #e4ece7;
+      --danger: #e5564b; --shadow: 0 6px 24px rgba(31,138,94,0.08); --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--ink); line-height: 1.5; }
+    .wrap { max-width: 640px; margin: 0 auto; padding: 24px 18px 64px; }
+    header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 6px; }
+    h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--green-deep), var(--orange-deep));
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 22px; }
+    a.back { color: var(--green-deep); font-size: 0.85rem; font-weight: 700; text-decoration: none; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 22px; margin-bottom: 18px; }
+    h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 16px; }
+    label.field { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 5px; font-weight: 700; }
+    input { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px;
+      font-size: 0.95rem; color: var(--ink); background: #fff; font-family: inherit; margin-bottom: 14px; }
+    input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(47,168,116,0.15); }
+    button { border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+      padding: 12px 16px; font-family: inherit; }
+    button.primary { background: linear-gradient(90deg, var(--green), var(--green-deep)); color: #fff; width: 100%; }
+    button.primary:hover { filter: brightness(1.05); }
+    button.ghost { background: #fff; border: 1px solid var(--line); color: var(--muted); }
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .provider { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+    .provider.active { border-color: var(--green); box-shadow: 0 0 0 3px rgba(47,168,116,0.12); }
+    .provider-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .provider-head input[type=radio] { width: auto; margin: 0; }
+    .provider-name { font-weight: 800; text-transform: capitalize; }
+    .badge { font-size: 0.7rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; margin-left: auto; }
+    .badge.set { background: rgba(47,168,116,0.15); color: var(--green-deep); }
+    .badge.notset { background: rgba(229,86,75,0.12); color: var(--danger); }
+    .hint { font-size: 0.78rem; color: var(--muted); margin: -8px 0 12px; }
+    .msg { padding: 12px 14px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; margin-bottom: 16px; }
+    .msg.ok { background: rgba(47,168,116,0.12); color: var(--green-deep); }
+    .msg.err { background: rgba(229,86,75,0.1); color: var(--danger); border: 1px solid rgba(229,86,75,0.25); }
+    .hidden { display: none; }
+    .lock { font-size: 2.2rem; text-align: center; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>K21 Admin</h1>
+      <a class="back" href="/">← Back to app</a>
+    </header>
+    <p class="sub">AI provider settings — owner only.</p>
+
+    <div id="global-msg"></div>
+
+    <!-- Login -->
+    <section class="card" id="login-card">
+      <div class="lock">🔒</div>
+      <h2 style="text-align:center;">Admin login</h2>
+      <form id="login-form">
+        <label class="field" for="password">Password</label>
+        <input type="password" id="password" autocomplete="current-password" placeholder="Enter admin password" required />
+        <button type="submit" class="primary">Log in</button>
+      </form>
+    </section>
+
+    <!-- Settings -->
+    <section class="card hidden" id="settings-card">
+      <h2>AI provider</h2>
+      <p class="hint">Choose which AI analyzes food photos. Keys are stored on the server and never shown here once saved.</p>
+      <form id="settings-form">
+        <div id="providers"></div>
+
+        <div class="row" style="margin-top:6px;">
+          <button type="submit" class="primary" style="flex:1;">Save settings</button>
+          <button type="button" class="ghost" id="test-btn">Test current</button>
+          <button type="button" class="ghost" id="logout-btn">Log out</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <script type="module">
+    const els = {
+      globalMsg: document.getElementById('global-msg'),
+      loginCard: document.getElementById('login-card'),
+      loginForm: document.getElementById('login-form'),
+      password: document.getElementById('password'),
+      settingsCard: document.getElementById('settings-card'),
+      settingsForm: document.getElementById('settings-form'),
+      providers: document.getElementById('providers'),
+      testBtn: document.getElementById('test-btn'),
+      logoutBtn: document.getElementById('logout-btn'),
+    };
+
+    let token = sessionStorage.getItem('k21.adminToken') || '';
+
+    function showMsg(text, kind) {
+      els.globalMsg.innerHTML = '';
+      if (!text) return;
+      const div = document.createElement('div');
+      div.className = `msg ${kind}`;
+      div.textContent = text;
+      els.globalMsg.appendChild(div);
+    }
+
+    async function api(path, { method = 'GET', body } = {}) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['x-admin-token'] = token;
+      const resp = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) throw new Error(data.error || `Request failed (${resp.status})`);
+      return data;
+    }
+
+    function showLogin() {
+      els.settingsCard.classList.add('hidden');
+      els.loginCard.classList.remove('hidden');
+    }
+    function showSettings() {
+      els.loginCard.classList.add('hidden');
+      els.settingsCard.classList.remove('hidden');
+    }
+
+    function renderProviders(config) {
+      els.providers.innerHTML = '';
+      for (const p of config.providers) {
+        const active = config.activeProvider === p.id;
+        const wrap = document.createElement('div');
+        wrap.className = `provider${active ? ' active' : ''}`;
+        wrap.dataset.id = p.id;
+        wrap.innerHTML = `
+          <div class="provider-head">
+            <input type="radio" name="provider" value="${p.id}" id="prov-${p.id}" ${active ? 'checked' : ''} />
+            <label class="provider-name" for="prov-${p.id}">${p.id}</label>
+            <span class="badge ${p.hasKey ? 'set' : 'notset'}">${p.hasKey ? 'key set (' + p.keySource + ')' : 'no key'}</span>
+          </div>
+          <label class="field">Model</label>
+          <input type="text" data-model="${p.id}" value="${escapeAttr(p.model)}" placeholder="${escapeAttr(p.defaultModel)}" />
+          <label class="field">API key ${p.hasKey ? '(leave blank to keep current)' : ''}</label>
+          <input type="password" data-key="${p.id}" placeholder="${p.hasKey ? '•••••••• already set' : 'paste API key'}" autocomplete="off" />
+          ${p.id === 'kimi'
+            ? `<label class="field">Kimi base URL</label><input type="text" id="kimi-base" value="${escapeAttr(config.kimiBaseURL)}" />`
+            : ''}
+        `;
+        els.providers.appendChild(wrap);
+      }
+      els.providers.querySelectorAll('input[name=provider]').forEach((r) => {
+        r.addEventListener('change', () => {
+          els.providers.querySelectorAll('.provider').forEach((d) =>
+            d.classList.toggle('active', d.dataset.id === r.value));
+        });
+      });
+    }
+
+    function escapeAttr(s) { return String(s ?? '').replace(/"/g, '&quot;'); }
+
+    async function loadConfig() {
+      const config = await api('/api/admin/config');
+      renderProviders(config);
+      showSettings();
+    }
+
+    // ---- Login ----
+    els.loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showMsg('', '');
+      try {
+        const { token: t } = await api('/api/admin/login', { method: 'POST', body: { password: els.password.value } });
+        token = t;
+        sessionStorage.setItem('k21.adminToken', token);
+        els.password.value = '';
+        await loadConfig();
+        showMsg('Logged in.', 'ok');
+      } catch (err) {
+        showMsg(err.message, 'err');
+      }
+    });
+
+    // ---- Save ----
+    els.settingsForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showMsg('', '');
+      const provider = els.providers.querySelector('input[name=provider]:checked')?.value;
+      const models = {};
+      const keys = {};
+      els.providers.querySelectorAll('input[data-model]').forEach((i) => { models[i.dataset.model] = i.value; });
+      els.providers.querySelectorAll('input[data-key]').forEach((i) => { if (i.value.trim()) keys[i.dataset.key] = i.value.trim(); });
+      const kimiBaseURL = document.getElementById('kimi-base')?.value;
+      try {
+        await api('/api/admin/config', { method: 'POST', body: { provider, models, keys, kimiBaseURL } });
+        await loadConfig();
+        showMsg('Settings saved. They take effect on the next scan.', 'ok');
+      } catch (err) {
+        showMsg(err.message, 'err');
+      }
+    });
+
+    // ---- Test ----
+    els.testBtn.addEventListener('click', async () => {
+      showMsg('Testing the active provider…', 'ok');
+      try {
+        const r = await api('/api/admin/test', { method: 'POST' });
+        showMsg(`✓ ${r.provider} (${r.model}) responded. Sample: "${r.sample.food_name}".`, 'ok');
+      } catch (err) {
+        showMsg('Test failed: ' + err.message, 'err');
+      }
+    });
+
+    // ---- Logout ----
+    els.logoutBtn.addEventListener('click', () => {
+      token = '';
+      sessionStorage.removeItem('k21.adminToken');
+      showLogin();
+      showMsg('Logged out.', 'ok');
+    });
+
+    // Resume an existing session if the token is still valid.
+    (async () => {
+      if (token) {
+        try { await loadConfig(); } catch { showLogin(); }
+      } else {
+        showLogin();
+      }
+    })();
+  </script>
+</body>
+</html>

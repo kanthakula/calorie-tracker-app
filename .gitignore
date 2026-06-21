@@ -3,6 +3,9 @@
 .env.*
 !.env.example
 
+# Owner-managed runtime config (contains API keys set via the admin console)
+runtime-config.json
+
 # Dependencies
 node_modules/
 

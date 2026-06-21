@@ -9,18 +9,27 @@ import dotenv from 'dotenv';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
+import { readRuntimeConfig } from './config-store.js';
 
 // Thrown when the provider/key/model isn't configured (→ HTTP 503, not 502).
 export class ConfigError extends Error {}
 
-const DEFAULT_MODELS = {
+export const DEFAULT_MODELS = {
   gemini: 'gemini-2.5-flash',
   openai: 'gpt-4o-mini',
   anthropic: 'claude-opus-4-8',
   kimi: 'moonshot-v1-8k-vision-preview',
 };
-const KIMI_DEFAULT_BASE_URL = 'https://api.moonshot.ai/v1';
-const SUPPORTED = ['gemini', 'openai', 'anthropic', 'kimi'];
+export const KIMI_DEFAULT_BASE_URL = 'https://api.moonshot.ai/v1';
+export const SUPPORTED_PROVIDERS = ['gemini', 'openai', 'anthropic', 'kimi'];
+
+// Which .env variables back each provider (fallback when no UI value is set).
+export const PROVIDER_ENV = {
+  gemini: { key: 'GEMINI_API_KEY', model: 'GEMINI_MODEL' },
+  openai: { key: 'OPENAI_API_KEY', model: 'OPENAI_MODEL' },
+  anthropic: { key: 'ANTHROPIC_API_KEY', model: 'ANTHROPIC_MODEL' },
+  kimi: { key: 'KIMI_API_KEY', model: 'KIMI_MODEL', baseURL: 'KIMI_BASE_URL' },
+};
 
 const BASE_PROMPT = [
   'You are a nutrition assistant for a calorie-tracking app.',
@@ -28,17 +37,19 @@ const BASE_PROMPT = [
   'Estimate values for the single serving/portion visible in the image.',
   'If several items are shown, treat them together as one combined meal.',
   'estimated_calories: a whole number of kilocalories for the visible portion.',
+  'protein_g, carbs_g, fat_g: estimated grams of protein, carbohydrates, and fat for the visible portion (whole numbers).',
   'healthiness_rating: integer 1-5 (1 = very unhealthy, 5 = very healthy).',
   'portion_recommendation: one short, practical sentence about portion size.',
   'confidence: how sure you are given image clarity ("low" | "medium" | "high").',
   'notes: one short sentence with any caveats or assumptions.',
-  'If the image does not contain food, set food_name to "No food detected", calories to 0, and confidence to "low".',
+  'If the image does not contain food, set food_name to "No food detected", all numbers to 0, and confidence to "low".',
 ].join(' ');
 
 const JSON_INSTRUCTION =
   'Respond with ONLY a single JSON object (no markdown, no code fences) with exactly these keys: ' +
-  'food_name (string), estimated_calories (number), healthiness_rating (number 1-5), ' +
-  'portion_recommendation (string), confidence ("low"|"medium"|"high"), notes (string).';
+  'food_name (string), estimated_calories (number), protein_g (number), carbs_g (number), ' +
+  'fat_g (number), healthiness_rating (number 1-5), portion_recommendation (string), ' +
+  'confidence ("low"|"medium"|"high"), notes (string).';
 
 // Gemini structured-output schema (forces the exact JSON shape).
 const GEMINI_SCHEMA = {
@@ -46,14 +57,17 @@ const GEMINI_SCHEMA = {
   properties: {
     food_name: { type: SchemaType.STRING },
     estimated_calories: { type: SchemaType.NUMBER },
+    protein_g: { type: SchemaType.NUMBER },
+    carbs_g: { type: SchemaType.NUMBER },
+    fat_g: { type: SchemaType.NUMBER },
     healthiness_rating: { type: SchemaType.NUMBER },
     portion_recommendation: { type: SchemaType.STRING },
     confidence: { type: SchemaType.STRING, enum: ['low', 'medium', 'high'] },
     notes: { type: SchemaType.STRING },
   },
   required: [
-    'food_name', 'estimated_calories', 'healthiness_rating',
-    'portion_recommendation', 'confidence', 'notes',
+    'food_name', 'estimated_calories', 'protein_g', 'carbs_g', 'fat_g',
+    'healthiness_rating', 'portion_recommendation', 'confidence', 'notes',
   ],
 };
 
@@ -71,6 +85,9 @@ function normalizeAnalysis(data) {
   return {
     food_name: String(d.food_name || 'Unknown food').slice(0, 120),
     estimated_calories: Math.round(clampNumber(d.estimated_calories, 0, 10000, 0)),
+    protein_g: Math.round(clampNumber(d.protein_g, 0, 1000, 0)),
+    carbs_g: Math.round(clampNumber(d.carbs_g, 0, 1000, 0)),
+    fat_g: Math.round(clampNumber(d.fat_g, 0, 1000, 0)),
     healthiness_rating: Math.round(clampNumber(d.healthiness_rating, 1, 5, 3)),
     portion_recommendation: String(d.portion_recommendation || '').slice(0, 400),
     confidence,
@@ -90,29 +107,35 @@ function parseLooseJson(text) {
   return JSON.parse(s);
 }
 
-// ---------- Config (re-read .env on every call) ----------
+// ---------- Config ----------
+// Precedence (highest first): owner's UI config (runtime-config.json) → .env → defaults.
+// Both sources are re-read on every call, so changes take effect without a restart.
 function resolveConfig() {
   dotenv.config({ override: true });
-  const provider = (process.env.LLM_PROVIDER || 'gemini').toLowerCase().trim();
-  if (!SUPPORTED.includes(provider)) {
-    throw new ConfigError(`Unknown LLM_PROVIDER "${provider}". Use one of: ${SUPPORTED.join(', ')}.`);
+  const rc = readRuntimeConfig();
+  const rcKeys = rc.keys || {};
+  const rcModels = rc.models || {};
+  const rcBaseURLs = rc.baseURLs || {};
+
+  const provider = String(rc.provider || process.env.LLM_PROVIDER || 'gemini')
+    .toLowerCase()
+    .trim();
+  if (!SUPPORTED_PROVIDERS.includes(provider)) {
+    throw new ConfigError(
+      `Unknown provider "${provider}". Use one of: ${SUPPORTED_PROVIDERS.join(', ')}.`,
+    );
   }
-  const cfg = { provider, model: '', apiKey: '', baseURL: undefined };
-  const env = (k) => (process.env[k] || '').trim();
-  if (provider === 'gemini') {
-    cfg.apiKey = env('GEMINI_API_KEY');
-    cfg.model = env('GEMINI_MODEL') || DEFAULT_MODELS.gemini;
-  } else if (provider === 'openai') {
-    cfg.apiKey = env('OPENAI_API_KEY');
-    cfg.model = env('OPENAI_MODEL') || DEFAULT_MODELS.openai;
-  } else if (provider === 'anthropic') {
-    cfg.apiKey = env('ANTHROPIC_API_KEY');
-    cfg.model = env('ANTHROPIC_MODEL') || DEFAULT_MODELS.anthropic;
-  } else if (provider === 'kimi') {
-    cfg.apiKey = env('KIMI_API_KEY');
-    cfg.model = env('KIMI_MODEL') || DEFAULT_MODELS.kimi;
-    cfg.baseURL = env('KIMI_BASE_URL') || KIMI_DEFAULT_BASE_URL;
-  }
+
+  const names = PROVIDER_ENV[provider];
+  const env = (k) => (k && process.env[k] ? String(process.env[k]).trim() : '');
+
+  const cfg = { provider };
+  cfg.apiKey = String(rcKeys[provider] || env(names.key) || '').trim();
+  cfg.model = String(rcModels[provider] || env(names.model) || DEFAULT_MODELS[provider]).trim();
+  cfg.baseURL =
+    provider === 'kimi'
+      ? String(rcBaseURLs.kimi || env('KIMI_BASE_URL') || KIMI_DEFAULT_BASE_URL).trim()
+      : undefined;
   return cfg;
 }
 
