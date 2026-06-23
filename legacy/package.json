@@ -1,0 +1,19 @@
+{
+  "name": "k21-calorie-tracker",
+  "version": "1.0.0",
+  "description": "A calorie tracker web app (Phase 2 will add Gemini image analysis)",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.71.2",
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2",
+    "openai": "^4.104.0",
+    "selfsigned": "^2.4.1"
+  }
+}

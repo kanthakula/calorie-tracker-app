@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Secrets / runtime config — NEVER ship these into the image
+.env
+.env.*
+runtime-config.json
+
+# Local storage / uploads
+uploads/
+
+# Tooling / docs
+.git/
+.gitignore
+README.md
+*.md
+.vscode/
+.idea/

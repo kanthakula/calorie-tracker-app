@@ -1,0 +1,124 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+
+.inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0.65rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text);
+  font-family: var(--font-display-stack);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.logo {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.brandText {
+  font-size: 1.15rem;
+}
+
+.brandAccent {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-left: 1px;
+}
+
+.nav {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+.navLink {
+  text-decoration: none;
+  color: var(--muted);
+  font-family: var(--font-display-stack);
+  font-weight: 600;
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
+}
+
+.navLink:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.navLink[aria-current='page'] {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.account {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  font-size: 1.05rem;
+  line-height: 1;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.themeToggle:hover {
+  background: var(--surface-2);
+  border-color: var(--accent);
+}
+
+.userName {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  max-width: 12ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* On mobile the bottom nav owns primary navigation — hide the inline links. */
+@media (max-width: 760px) {
+  .nav {
+    display: none;
+  }
+}
+
+@media (max-width: 540px) {
+  .userName {
+    display: none;
+  }
+  .brandText {
+    font-size: 1.05rem;
+  }
+}

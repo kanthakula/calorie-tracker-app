@@ -1,0 +1,202 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.latest {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.15rem;
+}
+
+.latestVal {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.latestUnit {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.trendNote {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.down {
+  color: var(--ok);
+  font-weight: 700;
+}
+
+.up {
+  color: var(--warn);
+  font-weight: 700;
+}
+
+.empty {
+  color: var(--subtle);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ---- Chart ---- */
+
+.chartWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.svg {
+  width: 100%;
+  height: 120px;
+  display: block;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem;
+}
+
+.rawLine {
+  stroke: var(--accent);
+  stroke-width: 0.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  opacity: 0.55;
+  vector-effect: non-scaling-stroke;
+}
+
+.trendLine {
+  stroke: var(--accent-2-fill);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.dot {
+  fill: var(--accent);
+  vector-effect: non-scaling-stroke;
+}
+
+.legend {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.swatch {
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.swatchRaw {
+  background: var(--accent);
+  opacity: 0.6;
+}
+
+.swatchTrend {
+  background: var(--accent-2-fill);
+}
+
+/* ---- Entry list ---- */
+
+.entryList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.entryItem {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.1rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.85rem;
+}
+
+.entryItem:last-child {
+  border-bottom: none;
+}
+
+.entryDate {
+  color: var(--muted);
+}
+
+.entryVal {
+  color: var(--text);
+}
+
+.del {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: var(--radius-sm);
+  width: 28px;
+  height: 28px;
+  line-height: 1;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.del:hover:not(:disabled) {
+  border-color: var(--over);
+  color: var(--over);
+  background: var(--over-soft);
+}
+
+.del:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Form ---- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inputRow .input {
+  flex: 1;
+}

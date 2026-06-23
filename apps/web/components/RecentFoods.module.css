@@ -1,0 +1,84 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.row {
+  list-style: none;
+  margin: 0;
+  padding: 0.15rem 0.1rem 0.4rem;
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.4rem 0.55rem 0.4rem 0.5rem;
+  min-height: 46px;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.06s ease;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.chip:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.chip:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.chipEmoji {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.chipBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.chipName {
+  font-family: var(--font-display-stack);
+  font-weight: 600;
+  font-size: 0.88rem;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chipCals {
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.chipPlus {
+  font-family: var(--font-mono-stack);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent-strong);
+  width: 1.1rem;
+  text-align: center;
+}

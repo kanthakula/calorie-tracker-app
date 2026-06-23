@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "K21 Calorie Tracker",
+    "slug": "k21-calorie-tracker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "k21",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "_assets_note": "Icon/splash/adaptive-icon fields are intentionally omitted: no binary assets ship in this repo, and referencing missing files would break `expo start`. TODO: add ./assets/icon.png (1024x1024), ./assets/splash.png, and ./assets/adaptive-icon.png, then wire up the standard icon/splash config here.",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "health.groundgame.k21",
+      "infoPlist": {
+        "NSCameraUsageDescription": "K21 uses your camera to photograph meals so it can estimate calories and macros.",
+        "NSPhotoLibraryUsageDescription": "K21 needs access to your photo library to analyze pictures of food you have already taken."
+      }
+    },
+    "android": {
+      "package": "health.groundgame.k21",
+      "permissions": ["CAMERA", "READ_EXTERNAL_STORAGE", "READ_MEDIA_IMAGES"]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "K21 needs access to your photos to analyze pictures of food.",
+          "cameraPermission": "K21 uses your camera to photograph meals for calorie estimation."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

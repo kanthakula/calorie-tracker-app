@@ -1,0 +1,105 @@
+.chartWrap {
+  width: 100%;
+}
+
+.plot {
+  position: relative;
+  height: 240px;
+  border-bottom: 2px solid var(--line);
+  padding-top: 1.5rem;
+}
+
+.goalLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 2px dashed var(--accent-2);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.goalTag {
+  position: absolute;
+  right: 0;
+  top: -1.05rem;
+  font-family: var(--font-mono-stack);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent-2);
+  background: var(--surface);
+  padding: 0 0.3rem;
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 100%;
+}
+
+.barCol {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.bar {
+  width: 100%;
+  max-width: 34px;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+  transition: filter 0.15s ease, height 0.3s ease;
+}
+
+.barCol:hover .bar,
+.barCol:focus-visible .bar {
+  filter: brightness(1.08) saturate(1.1);
+}
+
+.barOver {
+  background: linear-gradient(180deg, var(--over), var(--red-600));
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.axis {
+  display: flex;
+  gap: 3px;
+  margin-top: 0.4rem;
+}
+
+.tick {
+  flex: 1;
+  text-align: center;
+  font-size: 0.68rem;
+  color: var(--text-subtle);
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}

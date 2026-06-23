@@ -1,0 +1,77 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  /* Offset jump-link scrolling so the sticky header + quick-nav don't cover it. */
+  scroll-margin-top: calc(var(--header-h, 56px) + 60px);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.6rem 0.9rem;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.header:hover {
+  border-color: var(--accent);
+}
+
+.title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display-stack);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+.icon {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.right {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.badge {
+  font-family: var(--font-mono-stack);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+}
+
+.chevron {
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+  transform: rotate(0deg);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}

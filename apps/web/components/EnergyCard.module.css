@@ -1,0 +1,125 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.heading {
+  font-size: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.term {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.minus {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.unit {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.dash {
+  color: var(--subtle);
+  font-weight: 700;
+}
+
+.net {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.2rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.netDeficit {
+  background: var(--ok-soft);
+  border-color: color-mix(in srgb, var(--ok) 45%, transparent);
+}
+
+.netSurplus {
+  background: var(--warn-soft);
+  border-color: color-mix(in srgb, var(--warn) 45%, transparent);
+}
+
+.netLabel {
+  font-family: var(--font-display-stack);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.netValue {
+  font-size: 1.45rem;
+  font-weight: 800;
+}
+
+.netDeficit .netValue {
+  color: var(--ok);
+}
+
+.netSurplus .netValue {
+  color: var(--warn);
+}
+
+.netTag {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.prompt {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.promptLink {
+  color: var(--accent-strong);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.promptLink:hover {
+  text-decoration: underline;
+}

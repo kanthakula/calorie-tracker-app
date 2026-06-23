@@ -1,19 +1,49 @@
 {
   "name": "k21-calorie-tracker",
-  "version": "1.0.0",
-  "description": "A calorie tracker web app (Phase 2 will add Gemini image analysis)",
-  "type": "module",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
+  "version": "2.0.0",
+  "private": true,
+  "description": "K21 Calorie Tracker — production-grade TypeScript monorepo (web, mobile, Node API, Python AI service).",
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=20"
   },
-  "license": "MIT",
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.71.2",
-    "@google/generative-ai": "^0.21.0",
-    "dotenv": "^16.6.1",
-    "express": "^4.19.2",
-    "openai": "^4.104.0",
-    "selfsigned": "^2.4.1"
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "db:generate": "pnpm --filter @k21/db generate",
+    "db:migrate": "pnpm --filter @k21/db migrate",
+    "db:migrate:deploy": "pnpm --filter @k21/db migrate:deploy",
+    "db:seed": "pnpm --filter @k21/db seed",
+    "db:studio": "pnpm --filter @k21/db studio",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "ai:dev": "cd api/ai-service && uvicorn app.main:app --reload --port 8000",
+    "pm2:start": "pm2 start ecosystem.config.cjs",
+    "pm2:stop": "pm2 stop ecosystem.config.cjs",
+    "pm2:restart": "pm2 restart ecosystem.config.cjs",
+    "pm2:delete": "pm2 delete ecosystem.config.cjs",
+    "pm2:logs": "pm2 logs",
+    "pm2:status": "pm2 status",
+    "https": "node scripts/https-proxy.mjs",
+    "autostart:setup": "powershell -ExecutionPolicy Bypass -File scripts/autostart-setup.ps1",
+    "autostart:remove": "powershell -ExecutionPolicy Bypass -File scripts/autostart-remove.ps1"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2",
+    "selfsigned": "^2.4.1",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "react": "18.3.1",
+      "react-dom": "18.3.1",
+      "@types/react": "18.3.12",
+      "@types/react-dom": "18.3.1"
+    }
   }
 }

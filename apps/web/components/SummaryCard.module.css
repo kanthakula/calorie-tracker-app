@@ -1,0 +1,61 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  align-items: stretch;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.heading {
+  font-size: 1.05rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.goalNote {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.goalNote .num {
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
+.goalEdit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.goalEdit .input {
+  width: 7rem;
+}
+
+.math {
+  margin: 0;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.math .num {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.mathResult {
+  color: var(--accent-strong) !important;
+}

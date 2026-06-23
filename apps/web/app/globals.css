@@ -1,0 +1,495 @@
+/* ---- K21 Calorie Tracker — global styles & design tokens ----
+   Brand: "food-warm, data-clear" — warm ink, appetizing persimmon, fresh lime,
+   numbers set like instruments. Dark-first with a polished warm-paper light variant.
+   Plain CSS only (no framework). WCAG-AA contrast, mobile-first, accessible
+   focus + reduced-motion support.
+
+   Theme system (unchanged structure so the header toggle + owner default keep working):
+     :root                                   -> light tokens (default)
+     :root[data-theme='light']               -> light tokens (explicit)
+     :root[data-theme='dark']                -> dark tokens (explicit, wins over media)
+     @media (prefers-color-scheme: dark)
+       :root:not([data-theme])               -> dark tokens (OS preference)
+
+   Accent: --accent / --accent-strong are defined here as FALLBACKS. lib/settings.tsx
+   sets them inline on :root from the owner's settings (persimmon / lime). We never
+   fight that override — semantic state colors are kept separate. */
+
+:root {
+  /* ---------- Brand state palette (shared scaffolding) ---------- */
+  --red-500: #ff5c5c;
+  --red-600: #e23b3b;
+
+  /* ---------- LIGHT THEME (warm paper) — default ---------- */
+  --ground: #fbf7f1;
+  --bg: #fbf7f1; /* legacy alias */
+  --surface: #ffffff;
+  --surface-2: #f3ece2;
+  --line: #e6dccf;
+  --border: #e6dccf; /* legacy alias */
+
+  --text: #221e1a;
+  --muted: #6b5f54;
+  --subtle: #8a7d70;
+  --text-muted: #6b5f54; /* legacy alias */
+  --text-subtle: #8a7d70; /* legacy alias */
+
+  /* Accent — deeper persimmon/lime for AA on light. Overridden inline by owner. */
+  --accent: #e2552f;
+  --accent-strong: #c0431f;
+  --accent-2: #5c8a1f; /* AA-safe lime/green for TEXT on light */
+  --accent-2-fill: #c6f24e; /* bright lime — fills/bars only, never text on light */
+  --accent-soft: rgba(226, 85, 47, 0.12);
+
+  /* Semantic states tuned for light backgrounds */
+  --ok: #4f7a18;
+  --warn: #b76a12;
+  --over: #d92d20;
+  --ok-fill: #5c8a1f;
+  --ok-soft: rgba(92, 138, 31, 0.14);
+  --warn-soft: rgba(183, 106, 18, 0.14);
+  --over-soft: rgba(217, 45, 32, 0.12);
+
+  /* Legacy green/orange ramps remapped to brand so untouched CSS stays on-brand */
+  --green-50: var(--ok-soft);
+  --green-100: rgba(92, 138, 31, 0.18);
+  --green-300: #8fb84a;
+  --green-500: #5c8a1f;
+  --green-600: #4f7a18;
+  --green-700: #3f6212;
+  --green-900: #2b440b;
+  --orange-50: var(--accent-soft);
+  --orange-100: rgba(226, 85, 47, 0.16);
+  --orange-300: #f29063;
+  --orange-500: #e2552f;
+  --orange-600: #c0431f;
+  --orange-700: #9c3416;
+
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 20px;
+  --radius-xl: 22px;
+  --shadow-sm: 0 1px 2px rgba(58, 40, 28, 0.07);
+  --shadow: 0 6px 20px rgba(58, 40, 28, 0.1);
+  --shadow-lg: 0 16px 40px rgba(58, 40, 28, 0.16);
+
+  /* Typography — next/font variables with strong fallbacks */
+  --font-body-stack: var(--font-body), system-ui, -apple-system, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-display-stack: var(--font-display), var(--font-body), system-ui, sans-serif;
+  --font-mono-stack: var(--font-mono), ui-monospace, 'Cascadia Code', 'JetBrains Mono',
+    Menlo, Consolas, monospace;
+  --font: var(--font-body-stack); /* legacy alias */
+  --maxw: 1080px;
+  --header-h: 56px; /* live-measured by QuickNav; fallback for first paint */
+}
+
+/* Explicit light choice — re-pins light tokens for users on a dark OS. */
+:root[data-theme='light'] {
+  --ground: #fbf7f1;
+  --bg: #fbf7f1;
+  --surface: #ffffff;
+  --surface-2: #f3ece2;
+  --line: #e6dccf;
+  --border: #e6dccf;
+  --text: #221e1a;
+  --muted: #6b5f54;
+  --subtle: #8a7d70;
+  --text-muted: #6b5f54;
+  --text-subtle: #8a7d70;
+  --accent: #e2552f;
+  --accent-strong: #c0431f;
+  --accent-2: #5c8a1f;
+  --accent-2-fill: #c6f24e;
+  --accent-soft: rgba(226, 85, 47, 0.12);
+  --ok: #4f7a18;
+  --warn: #b76a12;
+  --over: #d92d20;
+  --ok-fill: #5c8a1f;
+  --ok-soft: rgba(92, 138, 31, 0.14);
+  --warn-soft: rgba(183, 106, 18, 0.14);
+  --over-soft: rgba(217, 45, 32, 0.12);
+  --green-50: var(--ok-soft);
+  --green-100: rgba(92, 138, 31, 0.18);
+  --green-300: #8fb84a;
+  --green-500: #5c8a1f;
+  --green-600: #4f7a18;
+  --green-700: #3f6212;
+  --orange-50: var(--accent-soft);
+  --orange-100: rgba(226, 85, 47, 0.16);
+  --orange-300: #f29063;
+  --orange-500: #e2552f;
+  --orange-600: #c0431f;
+  --orange-700: #9c3416;
+  --shadow-sm: 0 1px 2px rgba(58, 40, 28, 0.07);
+  --shadow: 0 6px 20px rgba(58, 40, 28, 0.1);
+  --shadow-lg: 0 16px 40px rgba(58, 40, 28, 0.16);
+}
+
+/* ---------- DARK THEME (warm ink) — the primary, more striking variant ---------- */
+:root[data-theme='dark'] {
+  --ground: #1a1614;
+  --bg: #1a1614;
+  --surface: #241f1c;
+  --surface-2: #2e2823;
+  --line: #3a322c;
+  --border: #3a322c;
+  --text: #f3ebe2;
+  --muted: #a89a8c;
+  --subtle: #7c7065;
+  --text-muted: #a89a8c;
+  --text-subtle: #7c7065;
+  --accent: #ff6b3d;
+  --accent-strong: #ff8a63;
+  --accent-2: #c6f24e;
+  --accent-2-fill: #c6f24e;
+  --accent-soft: rgba(255, 107, 61, 0.14);
+  --ok: #c6f24e;
+  --warn: #ffb14e;
+  --over: #ff5c5c;
+  --ok-fill: #c6f24e;
+  --ok-soft: rgba(198, 242, 78, 0.14);
+  --warn-soft: rgba(255, 177, 78, 0.14);
+  --over-soft: rgba(255, 92, 92, 0.14);
+  /* Legacy ramps -> brand (dark) */
+  --green-50: var(--ok-soft);
+  --green-100: rgba(198, 242, 78, 0.2);
+  --green-300: #d6f87a;
+  --green-500: #c6f24e;
+  --green-600: #b2e030;
+  --green-700: #d6f87a;
+  --green-900: #2b440b;
+  --orange-50: var(--accent-soft);
+  --orange-100: rgba(255, 107, 61, 0.2);
+  --orange-300: #ffb14e;
+  --orange-500: #ff6b3d;
+  --orange-600: #ff8a63;
+  --orange-700: #ffa884;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.6);
+}
+
+/* OS preference, only when the user hasn't made an explicit choice. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --ground: #1a1614;
+    --bg: #1a1614;
+    --surface: #241f1c;
+    --surface-2: #2e2823;
+    --line: #3a322c;
+    --border: #3a322c;
+    --text: #f3ebe2;
+    --muted: #a89a8c;
+    --subtle: #7c7065;
+    --text-muted: #a89a8c;
+    --text-subtle: #7c7065;
+    --accent: #ff6b3d;
+    --accent-strong: #ff8a63;
+    --accent-2: #c6f24e;
+    --accent-2-fill: #c6f24e;
+    --accent-soft: rgba(255, 107, 61, 0.14);
+    --ok: #c6f24e;
+    --warn: #ffb14e;
+    --over: #ff5c5c;
+    --ok-fill: #c6f24e;
+    --ok-soft: rgba(198, 242, 78, 0.14);
+    --warn-soft: rgba(255, 177, 78, 0.14);
+    --over-soft: rgba(255, 92, 92, 0.14);
+    --green-50: var(--ok-soft);
+    --green-100: rgba(198, 242, 78, 0.2);
+    --green-300: #d6f87a;
+    --green-500: #c6f24e;
+    --green-600: #b2e030;
+    --green-700: #d6f87a;
+    --orange-50: var(--accent-soft);
+    --orange-100: rgba(255, 107, 61, 0.2);
+    --orange-300: #ffb14e;
+    --orange-500: #ff6b3d;
+    --orange-600: #ff8a63;
+    --orange-700: #ffa884;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 18px 44px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Subtle theme transition; disabled under reduced-motion (see block below). */
+body {
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body-stack);
+  background: var(--ground);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100dvh;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-family: var(--font-display-stack);
+  font-weight: 600;
+}
+
+a {
+  color: var(--accent-strong);
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  color: var(--text);
+}
+
+/* Monospace, tabular numeric readouts — the data "instrument" treatment. */
+.num {
+  font-family: var(--font-mono-stack);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  letter-spacing: -0.02em;
+}
+
+/* Visible, consistent keyboard focus everywhere. */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Screen-reader-only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Shared primitives ---- */
+
+.app-main {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.25rem 1rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Clear the fixed bottom nav (mobile only — the bar is hidden ≥ 761px). */
+@media (max-width: 760px) {
+  .app-main {
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
+  }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.1rem 1.15rem;
+}
+
+.card h2 {
+  font-size: 1.05rem;
+  margin-bottom: 0.75rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 0.62rem 1rem;
+  min-height: 42px;
+  font-family: var(--font-display-stack);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  background: var(--surface-2);
+  color: var(--text);
+  transition: background 0.15s ease, transform 0.06s ease, box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btn:hover {
+  background: var(--line);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #fff;
+  box-shadow: 0 4px 14px var(--accent-soft);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+  filter: brightness(1.03);
+}
+
+/* Lime "fresh" action — used for AI / analyze moments. */
+.btn-accent {
+  background: var(--accent-2-fill);
+  color: #1a1614;
+  font-weight: 700;
+}
+
+.btn-accent:hover {
+  filter: brightness(1.05);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--text);
+}
+
+.btn-ghost:hover {
+  background: var(--surface-2);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 0.62rem 0.7rem;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus,
+.select:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  min-height: 38px;
+  font-family: var(--font-display-stack);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.chip:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.chip[aria-pressed='true'],
+.chip.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.subtle {
+  color: var(--subtle);
+  font-size: 0.85rem;
+}
+
+.error-text {
+  color: var(--over);
+  font-size: 0.88rem;
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: var(--ground);
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  box-shadow: var(--shadow-lg);
+  font-weight: 700;
+  z-index: 50;
+  animation: toast-in 0.2s ease;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+}
+
+/* Honor reduced-motion globally. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

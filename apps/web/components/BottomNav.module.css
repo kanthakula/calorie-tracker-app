@@ -1,0 +1,125 @@
+/* ---- Mobile bottom tab bar ---- */
+.bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  border-top: 1px solid var(--line);
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.3rem 0;
+  text-decoration: none;
+  color: var(--muted);
+  border-radius: var(--radius-sm);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tabActive {
+  color: var(--accent-strong);
+}
+
+.tabIcon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.tabLabel {
+  font-family: var(--font-display-stack);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Center FAB slot */
+.fabSlot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  background: transparent;
+  border: none;
+  color: var(--accent-strong);
+  padding: 0;
+}
+
+.fab {
+  display: grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  margin-top: -1.6rem; /* raise it above the bar */
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  color: #fff;
+  font-size: 1.9rem;
+  font-weight: 400;
+  line-height: 1;
+  box-shadow: 0 6px 18px var(--accent-soft), var(--shadow);
+  border: 3px solid var(--surface);
+  transition: transform 0.12s ease, filter 0.15s ease;
+}
+
+.fabSlot:hover .fab {
+  filter: brightness(1.05);
+}
+
+.fabSlot:active .fab {
+  transform: scale(0.94);
+}
+
+/* ---- Desktop floating FAB (bar hidden on wide screens) ---- */
+.desktopFab {
+  display: none;
+}
+
+@media (min-width: 761px) {
+  .bar {
+    display: none;
+  }
+  .desktopFab {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.85rem 1.3rem;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+    color: #fff;
+    font-family: var(--font-display-stack);
+    font-size: 1rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.12s ease, filter 0.15s ease;
+  }
+  .desktopFab span {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+  .desktopFab:hover {
+    filter: brightness(1.05);
+  }
+  .desktopFab:active {
+    transform: translateY(1px);
+  }
+}

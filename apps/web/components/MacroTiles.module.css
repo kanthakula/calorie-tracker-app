@@ -1,0 +1,76 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.heading {
+  font-size: 1.05rem;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.6rem 0.7rem;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.tileHead {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.emoji {
+  font-size: 1.05rem;
+  line-height: 1;
+}
+
+.label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.unit {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.bar {
+  height: 8px;
+  background: color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+  transition: width 0.5s ease;
+}
+
+.fillOver {
+  background: linear-gradient(90deg, var(--warn), var(--over));
+}

@@ -1,0 +1,8 @@
+# pnpm workspace definition.
+# Note: api/ai-service is a Python (FastAPI) project and is intentionally
+# NOT a pnpm workspace member — it is managed with pip/uv, not pnpm.
+packages:
+  - "apps/web"
+  - "apps/mobile"
+  - "packages/*"
+  - "api/node-api"

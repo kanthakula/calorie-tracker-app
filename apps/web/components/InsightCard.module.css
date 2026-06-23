@@ -1,0 +1,43 @@
+.card {
+  background:
+    linear-gradient(135deg, var(--accent-soft), transparent 70%),
+    var(--surface);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+}
+
+.row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.body {
+  flex: 1;
+}
+
+.headline {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.suggestion {
+  margin: 0.35rem 0 0.6rem;
+  color: var(--muted);
+}
+
+.health {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stars {
+  color: var(--warn);
+  letter-spacing: 1px;
+}

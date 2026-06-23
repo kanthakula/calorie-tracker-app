@@ -1,0 +1,255 @@
+.title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.loginWrap {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 1.75rem;
+}
+
+.providerRadios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.radioActive {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.radioName {
+  text-transform: capitalize;
+}
+
+.providerCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.providerHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.providerTitle {
+  font-size: 1.05rem;
+  text-transform: capitalize;
+}
+
+.keyBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.keyOk {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+
+.keyNone {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.keyWarn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.actionsCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.testOk {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.testFail {
+  color: var(--over);
+  font-weight: 600;
+}
+
+/* ---- Tabbed settings hub ---- */
+
+.tabs {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.6rem;
+}
+
+.tab {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+}
+
+.tab:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.tabActive {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ---- Branding preview ---- */
+
+.previewSwatch {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  margin-bottom: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.previewLogo {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.previewName {
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+}
+
+.previewAccents {
+  margin-left: auto;
+  display: flex;
+  gap: 0.35rem;
+}
+
+.previewAccents span {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.colorRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.colorPicker {
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ---- Feature toggles ---- */
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+}
+
+.featureRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.featureRow:last-child {
+  border-bottom: none;
+}
+
+.featureLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+
+.comingSoon {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.toggle {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--accent);
+  cursor: pointer;
+}

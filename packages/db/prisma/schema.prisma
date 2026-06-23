@@ -1,0 +1,324 @@
+// K21 Calorie Tracker — Prisma schema (PostgreSQL).
+// Generates the typed client consumed by api/node-api via @k21/db.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MealType {
+  breakfast
+  lunch
+  dinner
+  snack
+}
+
+enum Sex {
+  male
+  female
+  other
+}
+
+enum ActivityLevel {
+  sedentary
+  light
+  moderate
+  active
+  very_active
+}
+
+enum WeightGoal {
+  lose
+  maintain
+  gain
+}
+
+enum DietPattern {
+  balanced
+  high_protein
+  low_carb
+  keto
+  mediterranean
+}
+
+enum MealSource {
+  manual
+  library
+  ai
+  recipe
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  meals    Meal[]
+  goals    DailyGoal[]
+  profile    Profile?
+  workouts   Workout[]
+  weights    WeightEntry[]
+  waterDays  WaterDay[]
+  savedMeals SavedMeal[]
+  recipes    Recipe[]
+  fasts      FastSession[]
+
+  @@map("users")
+}
+
+/// Per-day hydration total (ml). One row per user per day.
+model WaterDay {
+  id     String @id @default(cuid())
+  userId String
+  date   String
+  ml     Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("water_days")
+}
+
+/// A reusable saved meal / recipe (a named macro bundle) for one-tap logging.
+model SavedMeal {
+  id       String @id @default(cuid())
+  userId   String
+  name     String
+  calories Int
+  protein  Int    @default(0)
+  carbs    Int    @default(0)
+  fat      Int    @default(0)
+  health   Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("saved_meals")
+}
+
+/// A named, multi-ingredient dish for one-tap logging. Ingredients store a macro
+/// snapshot (already scaled to the amount used); recipe totals are summed from
+/// them at read time. Per-serving = totals / servings.
+model Recipe {
+  id       String @id @default(cuid())
+  userId   String
+  name     String
+  servings Int    @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ingredients RecipeIngredient[]
+
+  @@index([userId])
+  @@map("recipes")
+}
+
+/// One ingredient line of a Recipe (macro snapshot already scaled to amount used).
+model RecipeIngredient {
+  id       String @id @default(cuid())
+  recipeId String
+  name     String
+  calories Int
+  protein  Int    @default(0)
+  carbs    Int    @default(0)
+  fat      Int    @default(0)
+
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId])
+  @@map("recipe_ingredients")
+}
+
+/// An intermittent-fasting session. `endAt = null` while the fast is active;
+/// `targetHours` is the goal window (e.g. 16 for 16:8). One active fast per user.
+model FastSession {
+  id          String    @id @default(cuid())
+  userId      String
+  startAt     DateTime
+  endAt       DateTime?
+  targetHours Int       @default(16)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startAt])
+  @@map("fast_sessions")
+}
+
+/// A body-weight measurement (one per day). Feeds trend smoothing + adaptive TDEE.
+model WeightEntry {
+  id       String @id @default(cuid())
+  userId   String
+  /// Calendar day, ISO `YYYY-MM-DD`.
+  date     String
+  weightKg Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("weight_entries")
+}
+
+/// A logged workout / activity with its calorie burn (MET-estimated or manual).
+model Workout {
+  id             String   @id @default(cuid())
+  userId         String
+  name           String
+  /// Activity key into the MET table (e.g. "running"); "custom" for manual.
+  activity       String
+  /// Calendar day, ISO `YYYY-MM-DD`.
+  date           String
+  durationMin    Int
+  caloriesBurned Int
+  /// "met" (estimated) | "manual" | "wearable" (future)
+  source         String   @default("met")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("workouts")
+}
+
+/// 1:1 personal profile + nutrition targets. Targets are computed from the
+/// stats (Mifflin–St Jeor BMR → TDEE) but stored so the user can override them.
+model Profile {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  displayName     String?
+  age             Int?
+  sex             Sex?
+  heightCm        Int?
+  currentWeightKg Float?
+  targetWeightKg  Float?
+  activityLevel   ActivityLevel @default(moderate)
+  goal            WeightGoal    @default(maintain)
+  dietPattern     DietPattern   @default(balanced)
+
+  /// Daily targets (kcal / grams / ml). Null = use the computed suggestion.
+  calorieTarget Int?
+  proteinTarget Int?
+  carbTarget    Int?
+  fatTarget     Int?
+  waterTargetMl Int?
+
+  /// When true, targets auto-follow the computed suggestion as stats change.
+  autoTargets Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Meal {
+  id       String     @id @default(cuid())
+  userId   String
+  name     String
+  calories Int
+  type     MealType
+  /// Calendar day this meal belongs to, as ISO `YYYY-MM-DD`.
+  date     String
+  protein  Int        @default(0)
+  carbs    Int        @default(0)
+  fat      Int        @default(0)
+  /// 1–5 healthiness; 0 = unrated.
+  health   Int        @default(0)
+  source   MealSource @default(manual)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("meals")
+}
+
+/// A user's calorie goal. `date = null` is the default/standing goal; a row with
+/// a specific date overrides the goal for that day.
+model DailyGoal {
+  id          String  @id @default(cuid())
+  userId      String
+  date        String?
+  calorieGoal Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@map("daily_goals")
+}
+
+/// App-wide owner settings (single row, id = "singleton"). Non-secret values
+/// here are served publicly to the web/mobile clients; LLM keys live elsewhere.
+model AppSettings {
+  id      String @id @default("singleton")
+  appName String @default("Ojas")
+  tagline String @default("Track food. Hit your targets.")
+  logoEmoji String @default("🍳")
+
+  /// "light" | "dark" | "system"
+  defaultTheme String @default("system")
+  /// Brand accents: persimmon (energy) + lime (fresh / under-target).
+  accentColor  String @default("#FF6B3D")
+  accentColor2 String @default("#C6F24E")
+
+  /// Feature flags (toggle features on/off without a deploy).
+  featAiSnap      Boolean @default(true)
+  featFoodLibrary Boolean @default(true)
+  featBarcode     Boolean @default(true)
+  featWorkouts    Boolean @default(true)
+  featWater       Boolean @default(false)
+
+  /// Extensible bag for future settings, so new config needs no migration.
+  extra Json @default("{}")
+
+  updatedAt DateTime @updatedAt @default(now())
+
+  @@map("app_settings")
+}
+
+/// Predefined food library shared by all users (read-only catalog).
+model FoodItem {
+  id       String @id @default(cuid())
+  name     String
+  category String
+  serving  String
+  calories Int
+  protein  Int
+  carbs    Int
+  fat      Int
+
+  @@unique([name, category])
+  @@index([category])
+  @@map("food_items")
+}

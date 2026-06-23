@@ -1,0 +1,242 @@
+.wrap {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 1rem calc(1.25rem + env(safe-area-inset-bottom));
+  background: var(--ground);
+}
+
+.card {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  padding: 1.25rem 1.2rem 1.4rem;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-display-stack);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.skip {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.skip:hover {
+  color: var(--text);
+}
+
+.progress {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.dot {
+  flex: 1;
+  height: 0.3rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  transition: background 0.2s ease;
+}
+
+.dotOn {
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+}
+
+.stepLabel {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.body {
+  min-height: 16rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.legend {
+  font-family: var(--font-display-stack);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.6rem;
+  padding: 0;
+}
+
+/* ---- Choice cards / rows ---- */
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.choice:hover {
+  border-color: var(--accent);
+}
+
+.choiceOn {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.choiceIcon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.choiceText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.choiceLabel {
+  font-weight: 700;
+}
+
+.choiceSub {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/* ---- Stats form ---- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
+.numField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* ---- Reveal ---- */
+.reveal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.calorieBig {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.calorieBig .num {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.calorieUnit {
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.macroRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.macro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.3rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.macroVal {
+  font-weight: 700;
+}
+
+.macroLabel {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* ---- Actions ---- */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.3rem;
+}
+
+.actions .btn:only-child {
+  margin-left: auto;
+}
+
+.actions :global(.btn-primary) {
+  margin-left: auto;
+}
